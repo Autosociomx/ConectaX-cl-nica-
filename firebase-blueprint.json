@@ -1,0 +1,225 @@
+{
+  "entities": {
+    "TriageRecord": {
+      "title": "TriageRecord",
+      "description": "A record of a patient's triage evaluation and symptoms.",
+      "type": "object",
+      "properties": {
+        "patientName": {
+          "type": "string",
+          "description": "Name of the patient"
+        },
+        "patientEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "Email of the patient"
+        },
+        "symptom": {
+          "type": "string",
+          "description": "Described symptoms"
+        },
+        "duration": {
+          "type": "string",
+          "description": "Duration of symptoms"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["mild", "moderate", "severe"],
+          "description": "Severity of symptoms"
+        },
+        "aiSummary": {
+          "type": "string",
+          "description": "AI generated clinical summary"
+        },
+        "doctorId": {
+          "type": "string",
+          "description": "ID of the assigned doctor"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "scheduled", "completed"],
+          "description": "Status of the triage/appointment"
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "description": "When the triage was created"
+        },
+        "uid": {
+          "type": "string",
+          "description": "User ID of the patient who created this record"
+        }
+      },
+      "required": ["patientName", "patientEmail", "symptom", "severity", "aiSummary", "doctorId", "status", "createdAt", "uid"]
+    },
+    "MedicalRecord": {
+      "title": "MedicalRecord",
+      "description": "An electronic medical record for a patient created by a specialist.",
+      "type": "object",
+      "properties": {
+        "patientName": {
+          "type": "string",
+          "description": "Name of the patient"
+        },
+        "patientId": {
+          "type": "string",
+          "description": "UID of the patient (if available)"
+        },
+        "doctorId": {
+          "type": "string",
+          "description": "UID of the doctor who created the record"
+        },
+        "report": {
+          "type": "string",
+          "description": "Clinical report of the consultation"
+        },
+        "progress": {
+          "type": "string",
+          "description": "Patient progress notes"
+        },
+        "diagnosis": {
+          "type": "string",
+          "description": "Clinical diagnosis"
+        },
+        "treatment": {
+          "type": "string",
+          "description": "Prescribed treatment"
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "description": "When the record was created"
+        },
+        "updatedAt": {
+          "type": "timestamp",
+          "description": "When the record was last updated"
+        }
+      },
+      "required": ["patientName", "doctorId", "report", "createdAt"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "A chat message between a user and a doctor's AI assistant.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "User ID of the patient"
+        },
+        "doctorId": {
+          "type": "string",
+          "description": "ID of the doctor the user is chatting with"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "bot"],
+          "description": "Role of the message sender"
+        },
+        "text": {
+          "type": "string",
+          "description": "The message content"
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "description": "When the message was sent"
+        }
+      },
+      "required": ["uid", "doctorId", "role", "text", "createdAt"]
+    },
+    "ClinicalProtocol": {
+      "title": "ClinicalProtocol",
+      "description": "Evidence-based clinical guidelines for the Oráculo Clínico.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "evidenceLevel": { "type": "string" }
+      },
+      "required": ["title", "content"]
+    },
+    "PatientContent": {
+      "title": "PatientContent",
+      "description": "Personalized educational content for the Espejo del Paciente.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "type": { "type": "string" }
+      },
+      "required": ["title", "body", "type"]
+    },
+    "EvolutionMetric": {
+      "title": "EvolutionMetric",
+      "description": "Data points for the Radar de Evolución.",
+      "type": "object",
+      "properties": {
+        "metricName": { "type": "string" },
+        "value": { "type": "number" },
+        "timestamp": { "type": "timestamp" }
+      },
+      "required": ["metricName", "value", "timestamp"]
+    },
+    "KnowledgeEntry": {
+      "title": "KnowledgeEntry",
+      "description": "Indexed knowledge for the Biblioteca del Arquitecto.",
+      "type": "object",
+      "properties": {
+        "source": { "type": "string" },
+        "content": { "type": "string" },
+        "tags": { "type": "string" }
+      },
+      "required": ["source", "content"]
+    },
+    "PatientReferral": {
+      "title": "PatientReferral",
+      "description": "A referral or pass for a patient to see a specific specialist.",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "reason": { "type": "string" },
+        "issuedAt": { "type": "timestamp" },
+        "expiresAt": { "type": "timestamp" }
+      },
+      "required": ["patientId", "doctorId", "issuedAt"]
+    }
+  },
+  "firestore": {
+    "/triages/{triageId}": {
+      "schema": {
+        "$ref": "#/entities/TriageRecord"
+      },
+      "description": "Collection of all patient triages."
+    },
+    "/medical_records/{recordId}": {
+      "schema": {
+        "$ref": "#/entities/MedicalRecord"
+      },
+      "description": "Collection of electronic medical records."
+    },
+    "/chat_messages/{messageId}": {
+      "schema": {
+        "$ref": "#/entities/ChatMessage"
+      },
+      "description": "Collection of chat messages between patients and AI assistants."
+    },
+    "/protocols/{protocolId}": {
+      "schema": { "$ref": "#/entities/ClinicalProtocol" },
+      "description": "Global clinical protocols."
+    },
+    "/patients/{patientId}/content/{contentId}": {
+      "schema": { "$ref": "#/entities/PatientContent" },
+      "description": "Personalized patient content."
+    },
+    "/patients/{patientId}/metrics/{metricId}": {
+      "schema": { "$ref": "#/entities/EvolutionMetric" },
+      "description": "Patient evolution metrics."
+    },
+    "/knowledge/{entryId}": {
+      "schema": { "$ref": "#/entities/KnowledgeEntry" },
+      "description": "Soberign knowledge library."
+    },
+    "/patients/{patientId}/referrals/{referralId}": {
+      "schema": { "$ref": "#/entities/PatientReferral" },
+      "description": "Referrals or passes for patients."
+    }
+  }
+}

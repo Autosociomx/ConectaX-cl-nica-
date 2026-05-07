@@ -1,0 +1,198 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: triages
+    // Document ID: auto-generated
+    // Fields:
+    //   - patientName: string (required, < 100 chars)
+    //   - patientEmail: string (required, valid email)
+    //   - symptom: string (required, < 2000 chars)
+    //   - duration: string (optional, < 100 chars)
+    //   - severity: string (required, 'mild', 'moderate', 'severe')
+    //   - aiSummary: string (required, < 5000 chars)
+    //   - doctorId: string (required, < 100 chars)
+    //   - status: string (required, 'pending', 'scheduled', 'completed')
+    //   - createdAt: timestamp (required)
+    //   - uid: string (required, must match request.auth.uid)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.email == "autosociomx@gmail.com" && request.auth.token.email_verified == true);
+    }
+    
+    function isSpecialist() {
+      return isAdmin(); // For now, admin is the specialist. We can expand this later.
+    }
+    
+    function isPatientOwner(patientId) {
+      return isAuthenticated() && request.auth.uid == patientId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+    
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+    
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function validStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+        request.resource.data[field].size() >= minLen &&
+        request.resource.data[field].size() <= maxLen;
+    }
+    
+    function isValidEmail(email) {
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+    
+    function isValidOptionalString(field, minLen, maxLen) {
+      return !(field in request.resource.data) ||
+             (request.resource.data[field] is string &&
+              request.resource.data[field].size() >= minLen &&
+              request.resource.data[field].size() <= maxLen);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    
+    function isValidTriageRecord(data) {
+      return hasRequiredFields(['patientName', 'patientEmail', 'symptom', 'severity', 'aiSummary', 'doctorId', 'status', 'createdAt', 'uid']) &&
+             validStringLength('patientName', 1, 100) &&
+             isValidEmail(data.patientEmail) &&
+             validStringLength('symptom', 1, 2000) &&
+             isValidOptionalString('duration', 0, 100) &&
+             data.severity in ['mild', 'moderate', 'severe'] &&
+             validStringLength('aiSummary', 1, 5000) &&
+             validStringLength('doctorId', 1, 100) &&
+             data.status in ['pending', 'scheduled', 'completed'] &&
+             data.createdAt is timestamp &&
+             data.uid == request.auth.uid;
+    }
+
+    function isValidMedicalRecord(data) {
+      return hasRequiredFields(['patientName', 'doctorId', 'report', 'createdAt']) &&
+             validStringLength('patientName', 1, 100) &&
+             validStringLength('doctorId', 1, 100) &&
+             validStringLength('report', 1, 10000) &&
+             isValidOptionalString('progress', 0, 5000) &&
+             isValidOptionalString('diagnosis', 0, 2000) &&
+             isValidOptionalString('treatment', 0, 5000) &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidChatMessage(data) {
+      return hasRequiredFields(['uid', 'doctorId', 'role', 'text', 'createdAt']) &&
+             validStringLength('uid', 1, 100) &&
+             validStringLength('doctorId', 1, 100) &&
+             data.role in ['user', 'bot'] &&
+             validStringLength('text', 1, 10000) &&
+             data.createdAt is timestamp &&
+             data.uid == request.auth.uid;
+    }
+
+    function isValidClinicalProtocol(data) {
+      return hasRequiredFields(['title', 'content']) &&
+             validStringLength('title', 1, 100) &&
+             validStringLength('content', 1, 50000) &&
+             isValidOptionalString('evidenceLevel', 0, 50);
+    }
+
+    function isValidPatientContent(data) {
+      return hasRequiredFields(['title', 'body', 'type']) &&
+             validStringLength('title', 1, 100) &&
+             validStringLength('body', 1, 50000) &&
+             validStringLength('type', 1, 50);
+    }
+
+    function isValidEvolutionMetric(data) {
+      return hasRequiredFields(['metricName', 'value', 'timestamp']) &&
+             validStringLength('metricName', 1, 100) &&
+             data.value is number &&
+             data.timestamp is timestamp;
+    }
+
+    function isValidKnowledgeEntry(data) {
+      return hasRequiredFields(['source', 'content']) &&
+             validStringLength('source', 1, 100) &&
+             validStringLength('content', 1, 50000) &&
+             isValidOptionalString('tags', 0, 100);
+    }
+    
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /triages/{triageId} {
+      allow create: if isAuthenticated() && isValidTriageRecord(request.resource.data) && uidUnchanged();
+      allow read: if isDocOwner() || isSpecialist();
+      allow update: if (isDocOwner() && isValidTriageRecord(request.resource.data) && uidNotModified()) || isSpecialist();
+      allow delete: if false;
+    }
+
+    match /medical_records/{recordId} {
+      allow create: if isSpecialist() && isValidMedicalRecord(request.resource.data);
+      allow read: if isSpecialist();
+      allow update: if isSpecialist() && isValidMedicalRecord(request.resource.data);
+      allow delete: if isSpecialist();
+    }
+
+    match /chat_messages/{messageId} {
+      allow create: if isAuthenticated() && isValidChatMessage(request.resource.data) && uidUnchanged();
+      allow read: if isDocOwner() || isSpecialist();
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    match /protocols/{protocolId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isSpecialist() && isValidClinicalProtocol(request.resource.data);
+    }
+
+    match /patients/{patientId}/content/{contentId} {
+      allow read: if isPatientOwner(patientId) || isSpecialist();
+      allow create, update, delete: if isSpecialist() && isValidPatientContent(request.resource.data);
+    }
+
+    match /patients/{patientId}/metrics/{metricId} {
+      allow read: if isPatientOwner(patientId) || isSpecialist();
+      allow create, update: if isSpecialist() && isValidEvolutionMetric(request.resource.data);
+      allow delete: if isSpecialist();
+    }
+
+    match /knowledge/{entryId} {
+      allow read: if isSpecialist();
+      allow create, update, delete: if isSpecialist() && isValidKnowledgeEntry(request.resource.data);
+    }
+
+    match /patients/{patientId}/referrals/{referralId} {
+      allow read: if isPatientOwner(patientId) || isSpecialist();
+      allow create, update, delete: if isSpecialist();
+    }
+  }
+}

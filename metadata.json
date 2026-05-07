@@ -1,0 +1,8 @@
+{
+  "name": "ConectaX Agency | Red Médica Elite",
+  "description": "Red de especialistas y agencia médica. Conectamos pacientes con los mejores doctores, psicólogos y nutriólogos a través de IA y telemedicina.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

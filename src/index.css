@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import "tailwindcss";
+@import "react-big-calendar/lib/css/react-big-calendar.css";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  
+  /* Luxury Elite Palette - High Contrast */
+  --color-dark-navy: #0F172A;
+  --color-deep-teal: #0D9488;
+  --color-sage: #10B981;
+  --color-mint: #F0FDFA;
+  --color-accent-coral: #F43F5E;
+  --color-soft-bg: #F8FAFC;
+  --color-gold: #D4AF37;
+  --color-text-main: #0F172A; /* Darker for better contrast */
+  --color-text-muted: #475569; /* Darker for better contrast */
+  --color-border-light: #E2E8F0;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-soft-bg text-text-main font-sans antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-serif text-dark-navy tracking-tight;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl border border-border-light rounded-3xl shadow-xl;
+  }
+
+  .btn-primary {
+    @apply bg-deep-teal text-white px-8 py-4 font-sans font-bold rounded-2xl hover:bg-deep-teal/90 transition-all shadow-lg shadow-deep-teal/20;
+  }
+
+  .btn-accent {
+    @apply bg-sage text-white px-8 py-4 font-sans font-bold rounded-2xl hover:bg-sage/90 transition-all shadow-lg shadow-sage/20;
+  }
+}
