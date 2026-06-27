@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth, handleFirestoreError, OperationType } from '../firebase';
 import { collection, query, where, onSnapshot, addDoc, serverTimestamp, orderBy, getDocs } from 'firebase/firestore';
-import { Globe, Lock, LogIn } from 'lucide-react';
+import { Globe, Lock, LogIn, ShieldCheck, Zap } from 'lucide-react';
+import { CIE11_CORE } from '../utils/medicalCoding';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -27,6 +28,8 @@ interface MedicalRecord {
   progress: string;
   diagnosis: string;
   treatment: string;
+  cie11Code?: string;
+  rigorStandards?: string[];
   createdAt: any;
 }
 
@@ -49,7 +52,8 @@ export default function ElectronicMedicalRecord({ doctor }: { doctor: Doctor }) 
     report: '',
     progress: '',
     diagnosis: '',
-    treatment: ''
+    treatment: '',
+    cie11Code: ''
   });
   const [permissionError, setPermissionError] = useState(false);
 
@@ -133,11 +137,13 @@ export default function ElectronicMedicalRecord({ doctor }: { doctor: Doctor }) 
         progress: formData.progress,
         diagnosis: formData.diagnosis,
         treatment: formData.treatment,
+        cie11Code: formData.cie11Code,
+        rigorStandards: ['JCI Patient Safety Goals', 'ICD-11 Sincro'],
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
       
-      setFormData({ report: '', progress: '', diagnosis: '', treatment: '' });
+      setFormData({ report: '', progress: '', diagnosis: '', treatment: '', cie11Code: '' });
       setShowForm(false);
     } catch (error) {
       console.error("Error saving medical record:", error);
@@ -225,15 +231,33 @@ export default function ElectronicMedicalRecord({ doctor }: { doctor: Doctor }) 
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="space-y-3">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Diagnóstico</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Diagnóstico Principal</label>
                     <input 
                       className="input-field p-5 rounded-2xl" 
                       placeholder="Diagnóstico clínico..."
                       value={formData.diagnosis}
                       onChange={(e) => setFormData({...formData, diagnosis: e.target.value})}
                     />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Carga CIE-11 (Código)</label>
+                    <div className="relative">
+                      <select 
+                        className="input-field p-5 rounded-2xl w-full appearance-none"
+                        value={formData.cie11Code}
+                        onChange={(e) => setFormData({...formData, cie11Code: e.target.value})}
+                      >
+                        <option value="">Seleccionar Entidad...</option>
+                        {Object.values(CIE11_CORE).map(entity => (
+                          <option key={entity.code} value={entity.code}>
+                            {entity.code} - {entity.name}
+                          </option>
+                        ))}
+                      </select>
+                      <Globe className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500 pointer-events-none" />
+                    </div>
                   </div>
                   <div className="space-y-3">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Tratamiento</label>

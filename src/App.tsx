@@ -8,6 +8,8 @@ import SpecialistDashboard from './components/SpecialistDashboard';
 import { TriageDashboard } from './components/TriageDashboard';
 import CockpitLayout from './components/Cockpit/CockpitLayout';
 import Chatbot from './components/Chatbot';
+import GovernancePortal from './components/Governance/GovernancePortal';
+import TepictuLayout from './components/TepictuSalud/TepictuLayout';
 import { DOCTORS, Doctor } from './services/doctorService';
 import { 
   Heart, Shield, Sparkles, Activity, Zap, Baby, ShieldCheck, Apple, Plus 
@@ -19,12 +21,17 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor>(DOCTORS[0]);
   const [showDirectory, setShowDirectory] = useState(true);
-  const [userRole, setUserRole] = useState<'patient' | 'specialist'>('patient');
+  const [userRole, setUserRole] = useState<'patient' | 'specialist' | 'governance'>('patient');
   const [activeSpecialistSection, setActiveSpecialistSection] = useState<'Centro de Comando Clínico' | 'Gobernanza de Agenda' | 'Arquitectura de Inteligencia Clínica' | 'Inteligencia de Pacientes' | 'Expediente Clínico Electrónico' | 'Hub de Inteligencia Clínica' | 'Cockpit de Precisión' | 'Dashboard de Triage' | 'Identidad Visual Nano Banana'>('Cockpit de Precisión');
+  const [activeGovernanceSection, setActiveGovernanceSection] = useState<'TepictuSalud' | 'AgroVisión 3D' | 'Monitor de Obra' | 'Dataset: Inteligencia Global'>('TepictuSalud');
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const toggleRole = () => {
-    setUserRole(prev => prev === 'patient' ? 'specialist' : 'patient');
+    setUserRole(prev => {
+      if (prev === 'patient') return 'specialist';
+      if (prev === 'specialist') return 'governance';
+      return 'patient';
+    });
     setSelectedDoctor(DOCTORS[0]);
     setShowDirectory(true);
     setActiveSpecialistSection('Cockpit de Precisión');
@@ -71,8 +78,8 @@ export default function App() {
           onClick={toggleRole}
           className="px-6 py-3 bg-white/80 backdrop-blur-xl border border-slate-200 shadow-2xl rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-3 transition-all"
         >
-          <div className={`w-2.5 h-2.5 rounded-full ${userRole === 'patient' ? 'bg-deep-teal' : 'bg-accent-coral'} animate-pulse shadow-[0_0_15px_rgba(0,0,0,0.2)]`} />
-          <span className="text-dark-navy">Operación: {userRole === 'patient' ? 'Paciente' : 'Especialista'}</span>
+          <div className={`w-2.5 h-2.5 rounded-full ${userRole === 'patient' ? 'bg-deep-teal' : userRole === 'specialist' ? 'bg-accent-coral' : 'bg-gold'} animate-pulse shadow-[0_0_15px_rgba(0,0,0,0.2)]`} />
+          <span className="text-dark-navy">Operación: {userRole === 'patient' ? 'Paciente' : userRole === 'specialist' ? 'Especialista' : 'Gobernanza'}</span>
         </motion.button>
       </div>
 
@@ -89,52 +96,88 @@ export default function App() {
       />
 
       <main className="flex-grow">
-        {userRole === 'specialist' ? (
+        {userRole === 'governance' ? (
           <div className="flex min-h-screen pt-20">
-            {/* Sidebar Specialist */}
+            {/* Sidebar Governance */}
             <motion.aside 
-              className="w-72 bg-white/80 backdrop-blur-xl border-r border-slate-100 p-8 flex flex-col gap-10 sticky top-20 h-[calc(100vh-80px)]"
+              className="w-72 bg-dark-navy border-r border-white/5 p-8 flex flex-col gap-10 sticky top-20 h-[calc(100vh-80px)] text-white"
               initial={{ x: -300 }}
               animate={{ x: 0 }}
             >
               <div className="flex flex-col gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Panel de Control</span>
-                <h2 className="text-2xl font-bold text-dark-navy tracking-tighter">Cockpit Especialista</h2>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold/60">Estrategia 2027-2033</span>
+                <h2 className="text-2xl font-bold tracking-tighter">Nayarit Inteligente</h2>
               </div>
               <nav className="flex flex-col gap-3">
                 {[
-                  'Cockpit de Precisión', 
-                  'Nodo: Centro de Comando', 
-                  'Nodo: Oráculo Clínico',
-                  'Nodo: Radar de Evolución',
-                  'Cluster: Inteligencia de Pacientes', 
-                  'Expediente Clínico Electrónico', 
-                  'Dataset: Inteligencia Global',
-                  'Gobernanza de Agenda', 
-                  'Arquitectura de IA', 
-                  'Seguimiento de Pagos',
-                  'Identidad Visual Nano Banana'
+                  'TepictuSalud', 
+                  'AgroVisión 3D', 
+                  'Monitor de Obra', 
+                  'Dataset: Inteligencia Global'
                 ].map((section) => (
                   <button
                     key={section}
-                    onClick={() => setActiveSpecialistSection(section as any)}
-                    className={`px-5 py-4 rounded-2xl text-xs font-bold transition-all text-left flex items-center justify-between group ${activeSpecialistSection === section ? 'bg-dark-navy text-white shadow-xl translate-x-2' : 'text-slate-500 hover:bg-slate-50 hover:text-dark-navy'}`}
+                    onClick={() => setActiveGovernanceSection(section as any)}
+                    className={`px-5 py-4 rounded-2xl text-xs font-bold transition-all text-left flex items-center justify-between group ${activeGovernanceSection === section ? 'bg-gold text-dark-navy shadow-xl translate-x-2' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
                   >
                     <span>{section}</span>
-                    {activeSpecialistSection === section && <motion.div layoutId="active-indicator" className="w-1.5 h-6 bg-gold rounded-full" />}
+                    {activeGovernanceSection === section && <div className="w-1.5 h-6 bg-dark-navy rounded-full" />}
+                  </button>
+                ))}
+              </nav>
+            </motion.aside>
+
+            {/* Content Area Governance */}
+            <div className="flex-grow bg-[#0c111d] p-10">
+               <GovernancePortal activeSection={activeGovernanceSection} />
+            </div>
+          </div>
+        ) : userRole === 'specialist' ? (
+          <div className="flex min-h-screen pt-20 bg-[#0c111d]">
+            {/* Sidebar Specialist - ELITE VERSION */}
+            <motion.aside 
+              className="w-72 bg-[#0c111d] border-r border-white/5 p-8 flex flex-col gap-10 sticky top-20 h-[calc(100vh-80px)] text-white"
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+            >
+              <div className="flex flex-col gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400">Sistema ConectaX</span>
+                <h2 className="text-3xl font-bold tracking-tighter text-white">X Medica Elite</h2>
+              </div>
+              <nav className="flex flex-col gap-2">
+                {[
+                  { name: 'Cockpit de Precisión', icon: <Zap className="w-4 h-4" /> },
+                  { name: 'Centro de Comando Clínico', icon: <ShieldCheck className="w-4 h-4" /> },
+                  { name: 'Hub de Inteligencia Clínica', icon: <Activity className="w-4 h-4" /> },
+                  { name: 'Expediente Clínico Electrónico', icon: <Plus className="w-4 h-4" /> },
+                  { name: 'Dataset: Inteligencia Global', icon: <Sparkles className="w-4 h-4" /> },
+                  { name: 'Arquitectura de IA', icon: <Activity className="w-4 h-4" /> },
+                ].map((section) => (
+                  <button
+                    key={section.name}
+                    onClick={() => setActiveSpecialistSection(section.name as any)}
+                    className={`px-5 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all text-left flex items-center justify-between group ${activeSpecialistSection === section.name ? 'bg-gold text-dark-navy shadow-[0_0_30px_rgba(212,175,55,0.2)]' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {section.icon}
+                      <span>{section.name}</span>
+                    </div>
                   </button>
                 ))}
               </nav>
               
-              <div className="mt-auto p-6 rounded-[2rem] bg-gold/5 border border-gold/10 text-center">
-                 <p className="text-[10px] uppercase font-bold text-gold tracking-widest mb-1">Status Sistema</p>
-                 <p className="text-xs font-bold text-dark-navy">Sincronización Total</p>
+              <div className="mt-auto p-6 rounded-[2rem] bg-emerald-500/5 border border-emerald-500/10 text-center">
+                 <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-widest mb-1">Status Sistema</p>
+                 <div className="flex items-center justify-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
+                    <p className="text-[10px] font-bold text-white uppercase tracking-tighter">Latencia: 14ms</p>
+                 </div>
               </div>
             </motion.aside>
 
-            {/* Content Area Specialist */}
-            <div className="flex-grow bg-slate-50/50 p-10">
-              <Suspense fallback={<div className="flex items-center justify-center min-h-[400px] text-xs font-bold uppercase tracking-widest text-slate-400">Arquitectando Dashboard...</div>}>
+            {/* Content Area Specialist - ELITE VERSION */}
+            <div className="flex-grow p-10 overflow-y-auto">
+              <Suspense fallback={<div className="flex items-center justify-center min-h-[400px] text-xs font-bold uppercase tracking-widest text-slate-400">Iniciando Red Neuronal...</div>}>
                 {activeSpecialistSection === 'Cockpit de Precisión' ? (
                   <CockpitLayout />
                 ) : activeSpecialistSection === 'Dashboard de Triage' ? (
@@ -151,14 +194,20 @@ export default function App() {
           </div>
         ) : (
           <div className="flex flex-col">
-            <PatientLanding 
-              selectedDoctor={selectedDoctor}
-              showDirectory={showDirectory}
-              setShowDirectory={setShowDirectory}
-              setSelectedDoctor={setSelectedDoctor}
-              setIsChatOpen={setIsChatOpen}
-              getIcon={getIcon}
-            />
+            {/* The TepictuSalud Smart App Experience */}
+            <TepictuLayout />
+            
+            {/* Specialized Medical Architecture View */}
+            <div className="pb-20">
+              <PatientLanding 
+                selectedDoctor={selectedDoctor}
+                showDirectory={showDirectory}
+                setShowDirectory={setShowDirectory}
+                setSelectedDoctor={setSelectedDoctor}
+                setIsChatOpen={setIsChatOpen}
+                getIcon={getIcon}
+              />
+            </div>
             
             <PatientPortal />
             
@@ -171,7 +220,7 @@ export default function App() {
 
       <Chatbot 
         doctor={selectedDoctor} 
-        userRole={userRole} 
+        userRole={userRole === 'governance' ? 'specialist' : userRole} 
         isControlled={isChatOpen} 
         controlledIsOpen={isChatOpen} 
         onControlledClose={() => setIsChatOpen(false)} 

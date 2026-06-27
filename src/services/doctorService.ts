@@ -48,10 +48,10 @@ const eliteNames = [
   'Dr. Stephen Cross', 'Dra. Helena Quinzel', 'Dr. Bruce Sterling', 'Dra. Celine Varga'
 ];
 
-const eliteSpecialties = [
+export const eliteSpecialties = [
   'Neurocirugía Robótica', 'Cardiología Genómica', 'Oncología de Precisión', 'Inmunología Molecular',
   'Endocrinología Avanzada', 'Psiquiatría Neurocognitiva', 'Medicina Regenerativa', 'Terapia Génica',
-  'Cirugía Cardiovascular', 'Neurología Funcional', 'Gastroenterología Molecular', 'Nefrología Traslacional',
+  'Cirugía Cardiovascular', 'Neurología Funcional', 'Medicina Gastrointestinal', 'Nefrología Traslacional',
   'Neumología Intervencionista', 'Reumatología Biológica', 'Dermatología Oncológica', 'Hematología Avanzada',
   'Infectología Global', 'Pediatría Genómica', 'Geriatría de Precisión', 'Medicina Aeroespacial',
   'Nutrición Epigenética', 'Psicología Clínica Avanzada', 'Neuropsicología', 'Medicina Deportiva de Élite',
@@ -60,6 +60,49 @@ const eliteSpecialties = [
   'Patología Molecular', 'Medicina de Emergencia Avanzada', 'Toxicología Clínica', 'Farmacología Genómica',
   'Epidemiología Computacional', 'Salud Pública Global', 'Bioética Médica', 'Informática Biomédica'
 ];
+
+export const SPECIALTY_AREAS: Record<string, string[]> = {
+  'Neurocirugía Robótica': ['Intervención Cerebral', 'Sincronización Neural', 'Micro-Robótica'],
+  'Cardiología Genómica': ['Mapeo de ADN Cardiaco', 'Prevención de Infartos', 'Terapia de Canales'],
+  'Oncología de Precisión': ['Inmunoterapia', 'Biopsia Líquida', 'Edición Genómica Tumor'],
+  'Inmunología Molecular': ['Autoinmunidad', 'Vacunas de ARNm', 'Modulación Cytokinesis'],
+  'Endocrinología Avanzada': ['Optimización Hormonal', 'Manejo Longevo', 'Metabolismo Digital'],
+  'Psiquiatría Neurocognitiva': ['Reconexión Sináptica', 'Salud Mental Digital', 'Neurotransmisión'],
+  'Medicina Regenerativa': ['Células Madre', 'Impresión de Órganos', 'Bio-Ingeniería'],
+  'Terapia Génica': ['CRISPR-Cas9', 'Vectores Virales', 'Corrección de Mutaciones'],
+  'Cirugía Cardiovascular': ['Prótesis de Titanio', 'Bypass de Precisión', 'Corazón Artificial'],
+  'Neurología Funcional': ['Epilepsia Refractaria', 'Manejo de Párkinson', 'Estimulación Profunda'],
+  'Medicina Gastrointestinal': ['Microbioma Humano', 'Digestión de Alta Precisión', 'Inmunidad Intestinal'],
+  'Nefrología Traslacional': ['Diálisis Inteligente', 'Trasplantes No-Rechazo', 'Bionefrología'],
+  'Neumología Intervencionista': ['Limpieza Pulmonar', 'Oxigenación Sangre', 'Manejo de Asma Severa'],
+  'Reumatología Biológica': ['Artritis Molecular', 'Lupus Sistémico', 'Terapias de Anticuerpos'],
+  'Dermatología Oncológica': ['Microscopía de Mohs', 'Melanoma Metastásico', 'Fototerapia Led'],
+  'Hematología Avanzada': ['Leucemia Aguda', 'Coagulación Digital', 'Plasmaféresis'],
+  'Infectología Global': ['Pandemias Emergentes', 'Bio-Seguridad', 'Antibióticos de 4ta'],
+  'Pediatría Genómica': ['Desarrollo Infantil', 'Detección Precoz', 'Nutrición Temprana'],
+  'Geriatría de Precisión': ['Longevidad Humana', 'Deterioro Cognitivo', 'Movilidad Avanzada'],
+  'Medicina Aeroespacial': ['Adaptación de Gravedad', 'Salud en Órbita', 'Radiación Cósmica'],
+  'Nutrición Epigenética': ['Dietética Metabólica', 'Control de Insulina', 'Nutracéuticos'],
+  'Psicología Clínica Avanzada': ['Terapia Transpersonal', 'Trauma Sistémico', 'Conductual Cognitiva'],
+  'Neuropsicología': ['Evaluación Ejecutiva', 'Rehabilitación Cerebral', 'Déficit de Atención'],
+  'Medicina Deportiva de Élite': ['Bio-Mecánica', 'Recuperación Hiperbárica', 'Rendimiento Olímpico'],
+  'Cirugía Plástica Reconstructiva': ['Microcirugía Microvascular', 'Quemados', 'Restauración Estética'],
+  'Oftalmología Biónica': ['Retina Artificial', 'Cirugía Lasik Pro', 'Implantes Oculares'],
+  'Otorrinolaringología Robótica': ['Cochlear implants', 'Nasal Endoscopy', 'Vestibular Rehab'],
+  'Urología Oncológica': ['Cáncer de Próstata', 'Robótica Da Vinci', 'Litotricia Láser'],
+  'Ginecología Reproductiva Avanzada': ['FIV de Élite', 'Preservación de Óvulos', 'Genética Embrionaria'],
+  'Obstetricia Fetal': ['Cirugía en Útero', 'Parto Sin Malestar', 'Salud Materna'],
+  'Anestesiología de Precisión': ['Sedación Consciente', 'Bloqueo de Dolor Crónico', 'Monitoreo Vital'],
+  'Radiología Intervencionista': ['Aneurismas', 'Radiocirugía Esterotáxica', 'Imagen 8K'],
+  'Patología Molecular': ['Diagnóstico Celular', 'Marcadores Bioquímicos', 'Histología Digital'],
+  'Medicina de Emergencia Avanzada': ['Resucitación de Trauma', 'Vía Aérea Difícil', 'Triaje Militar'],
+  'Toxicología Clínica': ['Neutralización Toxinas', 'Sobredosis', 'Exposición Química'],
+  'Farmacología Genómica': ['Drogas Personalizadas', 'Efectos Secundarios Mini', 'Interacción Global'],
+  'Epidemiología Computacional': ['Predicción Brotes', 'Análisis Big Data', 'Salud de Poblaciones'],
+  'Salud Pública Global': ['Políticas Sanitarias', 'Acceso Universal', 'Vacunación Masiva'],
+  'Bioética Médica': ['Derechos Paciente', 'Ética Inteligencia Artificial', 'Clonación Humana'],
+  'Informática Biomédica': ['Telemetría Médica', 'HL7 FHIR Sincro', 'Expediente Universal']
+};
 
 const categories: ('Medicina' | 'Psicología' | 'Nutrición' | 'Bienestar')[] = ['Medicina', 'Psicología', 'Nutrición', 'Bienestar'];
 const pnlStyles: ('Empático' | 'Directo' | 'Analítico' | 'Cálido')[] = ['Empático', 'Directo', 'Analítico', 'Cálido'];

@@ -13,7 +13,7 @@ import {
   Video
 } from 'lucide-react';
 import { Doctor } from '../services/doctorService';
-import ConectaXMatch from './ConectaXMatch';
+import SpecialtyDirectory from './Elite/SpecialtyDirectory';
 import TelemedicineRoom from './Telemedicine/TelemedicineRoom';
 
 interface PatientLandingProps {
@@ -47,12 +47,14 @@ export default function PatientLanding({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
         >
-          <div className="pt-32 pb-12 px-6 text-center">
-            <h1 className="text-5xl font-bold text-dark-navy mb-4 font-sans tracking-tight">Directorio de Especialistas</h1>
-            <p className="text-slate-500 max-w-2xl mx-auto text-lg">Encuentra al profesional adecuado para tu salud entre nuestra red de expertos certificados.</p>
+          <div className="pt-20 pb-12 px-6 text-center">
+            <h1 className="text-5xl font-bold text-dark-navy mb-4 font-sans tracking-tight">Arquitectura de Especialidades</h1>
+            <p className="text-slate-500 max-w-2xl mx-auto text-lg leading-relaxed">
+              Explora nuestra red global de nodos especializados. Cada área cuenta con protocolos de vanguardia y sincronización tecnológica de élite.
+            </p>
           </div>
-          <React.Suspense fallback={<div className="p-24 text-center">Cargando directorio...</div>}>
-            <ConectaXMatch onSelectDoctor={(doc) => { setSelectedDoctor(doc); setShowDirectory(false); }} />
+          <React.Suspense fallback={<div className="p-24 text-center">Iniciando Red de Especialidades...</div>}>
+            <SpecialtyDirectory onSelectSpecialty={(doc) => { setSelectedDoctor(doc); setShowDirectory(false); }} />
           </React.Suspense>
         </motion.div>
       ) : (
